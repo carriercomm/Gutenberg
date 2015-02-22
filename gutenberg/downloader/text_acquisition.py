@@ -2,7 +2,35 @@
 
 
 def _format_download_uri(etextno):
-    raise NotImplementedError
+    """Returns the download location on the Project Gutenberg servers for a
+    given text.
+
+    """
+    uri_root = r'http://www.gutenberg.lib.md.us'
+
+    if 0 < etextno < 10:
+        oldstyle_files = (
+            'when11',
+            'bill11',
+            'jfk11',
+            'getty11',
+            'const11',
+            'liber11',
+            'mayfl11',
+            'linc211',
+            'linc111',
+        )
+        etextno = int(etextno)
+        return '{root}/etext90/{name}.txt'.format(
+            root=uri_root,
+            name=oldstyle_files[etextno - 1])
+
+    else:
+        etextno = str(etextno)
+        return '{root}/{path}/{etextno}/{etextno}.txt'.format(
+            root=uri_root,
+            path='/'.join(etextno[:len(etextno) - 1]),
+            etextno=etextno)
 
 
 def fetch_etext(etextno):
