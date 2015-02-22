@@ -62,12 +62,12 @@ if __name__ == '__main__':
     import unittest
 
     class Test(unittest.TestCase):
-        mobydick_etextno = 2701
-        constitution_etextno = 5
+        newstyle_etextno = 2701
+        oldstyle_etextno = 5
 
         def test_fetch_etext(self):
-            mobydick = fetch_etext(Test.mobydick_etextno)
-            constitution = fetch_etext(Test.constitution_etextno)
+            mobydick = fetch_etext(Test.newstyle_etextno)
+            constitution = fetch_etext(Test.oldstyle_etextno)
 
             self.assertIsInstance(mobydick, unicode)
             self.assertIsInstance(constitution, unicode)
@@ -76,11 +76,11 @@ if __name__ == '__main__':
 
         def test_format_download_uri(self):
             self.assertEquals(
-                _format_download_uri(Test.mobydick_etextno),
+                _format_download_uri(Test.newstyle_etextno),
                 r'http://www.gutenberg.lib.md.us/2/7/0/2701/2701.txt',
                 'bad download-uri for newstyle e-text')
             self.assertEquals(
-                _format_download_uri(Test.constitution_etextno),
+                _format_download_uri(Test.oldstyle_etextno),
                 r'http://www.gutenberg.lib.md.us/etext90/const11.txt',
                 'bad download-uri for oldstyle e-text')
 
