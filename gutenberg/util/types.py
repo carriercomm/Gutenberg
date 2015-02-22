@@ -1,7 +1,7 @@
 """Module to deal with type validation."""
 
 
-def is_valid_etext(etextno):
+def validate_etextno(etextno):
     """Raises a ValueError if the argument does not represent a valid Project
     Gutenberg text idenfifier.
 
@@ -9,7 +9,7 @@ def is_valid_etext(etextno):
     if not isinstance(etextno, int) or etextno <= 0:
         msg = 'e-text identifiers should be strictly positive integers'
         raise ValueError(msg)
-    return True
+    return etextno
 
 
 if __name__ == '__main__':
@@ -19,19 +19,19 @@ if __name__ == '__main__':
 
     class Test(unittest.TestCase):
         def test_is_valid_etext(self):
-            self.assertTrue(is_valid_etext(1))
-            self.assertTrue(is_valid_etext(12))
-            self.assertTrue(is_valid_etext(123))
-            self.assertTrue(is_valid_etext(1234))
+            self.assertIsNotNone(validate_etextno(1))
+            self.assertIsNotNone(validate_etextno(12))
+            self.assertIsNotNone(validate_etextno(123))
+            self.assertIsNotNone(validate_etextno(1234))
 
         def test_is_invalid_etext(self):
             with self.assertRaises(ValueError):
-                is_valid_etext('not-a-positive-integer')
+                validate_etextno('not-a-positive-integer')
             with self.assertRaises(ValueError):
-                is_valid_etext(-123)
+                validate_etextno(-123)
             with self.assertRaises(ValueError):
-                is_valid_etext(0)
+                validate_etextno(0)
             with self.assertRaises(ValueError):
-                is_valid_etext(12.3)
+                validate_etextno(12.3)
 
     unittest.main()
