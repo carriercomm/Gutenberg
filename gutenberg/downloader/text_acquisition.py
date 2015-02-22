@@ -3,6 +3,7 @@
 
 
 import requests
+from gutenberg.util.types import validate_etextno
 
 
 def _format_download_uri(etextno):
@@ -49,7 +50,7 @@ def fetch_etext(etextno):
     text (makes a remote call to Project Gutenberg's servers).
 
     """
-    download_uri = _format_download_uri(etextno)
+    download_uri = _format_download_uri(validate_etextno(etextno))
     response = requests.get(download_uri)
     return response.text
 
