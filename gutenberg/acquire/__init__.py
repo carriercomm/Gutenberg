@@ -1,1 +1,1 @@
-from . text_acquisition import fetch_etext
+from . text import fetch_etext
