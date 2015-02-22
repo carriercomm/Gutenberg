@@ -9,7 +9,7 @@ import tarfile
 import tempfile
 import urllib2
 
-from rdflib import Graph
+from rdflib.graph import Graph
 
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
