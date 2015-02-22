@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Module to deal with text acquisition."""
 
 
@@ -74,46 +73,3 @@ def load_etext(etextno, refresh_cache=False):
         with gzip.open(cached, 'r') as cache:
             text = cache.read().decode('utf-8')
     return text
-
-
-if __name__ == '__main__':
-    # pylint: disable=C0111
-    # pylint: disable=R0904
-    import functools
-    import unittest
-
-    class Test(unittest.TestCase):
-        newstyle_etextno = 2701
-        oldstyle_etextno = 5
-        unicode_etextno = 14287
-
-        def test_load_etext(self):
-            loaders = (functools.partial(load_etext, refresh_cache=True),
-                        functools.partial(load_etext, refresh_cache=False))
-            for load in loaders:
-                mobydick = load(Test.newstyle_etextno)
-                constitution = load(Test.oldstyle_etextno)
-                ilemysterieuse = load(Test.unicode_etextno)
-
-                self.assertIsInstance(mobydick, unicode)
-                self.assertIsInstance(constitution, unicode)
-                self.assertIsInstance(ilemysterieuse, unicode)
-                self.assertIn(u'Moby Dick; or The Whale', mobydick)
-                self.assertIn(u"The United States' Constitution", constitution)
-                self.assertIn(u"L'île mystérieuse", ilemysterieuse)
-
-        def test_format_download_uri(self):
-            self.assertEquals(
-                _format_download_uri(Test.newstyle_etextno),
-                r'http://www.gutenberg.lib.md.us/2/7/0/2701/2701.txt',
-                'bad download-uri for newstyle e-text')
-            self.assertEquals(
-                _format_download_uri(Test.oldstyle_etextno),
-                r'http://www.gutenberg.lib.md.us/etext90/const11.txt',
-                'bad download-uri for oldstyle e-text')
-            self.assertEquals(
-                _format_download_uri(Test.unicode_etextno),
-                r'http://www.gutenberg.lib.md.us/1/4/2/8/14287/14287-8.txt',
-                'bad download-uri for unicode e-text')
-
-    unittest.main()
