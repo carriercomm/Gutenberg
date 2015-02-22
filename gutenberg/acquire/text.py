@@ -7,7 +7,9 @@ import os
 
 import requests
 
-from gutenberg.util.persistence import local_file
+from gutenberg.util.os import makedirs
+from gutenberg.util.os import remove
+from gutenberg.util.persistence import local_path
 from gutenberg.util.types import validate_etextno
 
 
@@ -57,9 +59,12 @@ def fetch_etext(etextno, refresh_cache=False):
 
     """
     etextno = validate_etextno(etextno)
-    cached = local_file(os.path.join('text', '{}.txt.gz'.format(etextno)))
+    cached = local_path(os.path.join('text', '{}.txt.gz'.format(etextno)))
 
-    if refresh_cache or not os.path.exists(cached):
+    if refresh_cache:
+        remove(cached)
+    if not os.path.exists(cached):
+        makedirs(os.path.dirname(cached))
         download_uri = _format_download_uri(etextno)
         response = requests.get(download_uri)
         text = response.text

@@ -1,7 +1,7 @@
 """Module to deal with storing data files on disk."""
 
 
-import errno
+from __future__ import absolute_import
 import os
 
 
@@ -13,22 +13,8 @@ def _root():
     return os.environ.get('GUTENBERG_DATA', default_root)
 
 
-def _makedirs(*args, **kwargs):
-    """Wrapper around os.makedirs that does not fail when the directories
-    already exist.
-
-    """
-    try:
-        return os.makedirs(*args, **kwargs)
-    except OSError as ex:
-        if ex.errno != errno.EEXIST:
-            raise
-
-
-def local_file(path):
+def local_path(path):
     """Returns a path that the caller may use to store local files.
 
     """
-    path = os.path.join(_root(), path)
-    _makedirs(os.path.dirname(path))
-    return path
+    return os.path.join(_root(), path)
