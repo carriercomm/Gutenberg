@@ -4,7 +4,9 @@
 
 import gzip
 import os
+
 import requests
+
 from gutenberg.util.persistence import local_file
 from gutenberg.util.types import validate_etextno
 
