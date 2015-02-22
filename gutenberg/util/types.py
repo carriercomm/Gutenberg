@@ -2,7 +2,14 @@
 
 
 def is_valid_etext(etextno):
-    raise NotImplementedError
+    """Raises a ValueError if the argument does not represent a valid Project
+    Gutenberg text idenfifier.
+
+    """
+    if not isinstance(etextno, int) or etextno <= 0:
+        msg = 'e-text identifiers should be strictly positive integers'
+        raise ValueError(msg)
+    return True
 
 
 if __name__ == '__main__':
