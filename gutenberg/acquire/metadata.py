@@ -40,7 +40,7 @@ def _iter_metadata_graphs(metadata_archive_path):
                 yield Graph().parse(metadata_archive.extractfile(item))
 
 
-def fetch_metadata(refresh_cache=False):
+def load_metadata(refresh_cache=False):
     """Returns a graph representing meta-data for all Project Gutenberg texts.
     Pertinent information about texts or about how texts relate to each other
     (e.g. shared authors, shared subjects) can be extracted using standard RDF

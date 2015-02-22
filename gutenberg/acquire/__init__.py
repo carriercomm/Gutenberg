@@ -1,2 +1,2 @@
-from . text import fetch_etext
-from . metadata import fetch_metadata
+from . text import load_etext
+from . metadata import load_metadata

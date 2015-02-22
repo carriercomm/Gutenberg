@@ -52,7 +52,7 @@ def _format_download_uri(etextno):
         raise ValueError('download URI for {} not supported'.format(etextno))
 
 
-def fetch_etext(etextno, refresh_cache=False):
+def load_etext(etextno, refresh_cache=False):
     """Returns a unicode representation of the full body of a Project Gutenberg
     text. After making an initial remote call to Project Gutenberg's servers,
     the text is persisted locally.
@@ -87,13 +87,13 @@ if __name__ == '__main__':
         oldstyle_etextno = 5
         unicode_etextno = 14287
 
-        def test_fetch_etext(self):
-            fetchers = (functools.partial(fetch_etext, refresh_cache=True),
-                        functools.partial(fetch_etext, refresh_cache=False))
-            for fetch in fetchers:
-                mobydick = fetch(Test.newstyle_etextno)
-                constitution = fetch(Test.oldstyle_etextno)
-                ilemysterieuse = fetch(Test.unicode_etextno)
+        def test_load_etext(self):
+            loaders = (functools.partial(load_etext, refresh_cache=True),
+                        functools.partial(load_etext, refresh_cache=False))
+            for load in loaders:
+                mobydick = load(Test.newstyle_etextno)
+                constitution = load(Test.oldstyle_etextno)
+                ilemysterieuse = load(Test.unicode_etextno)
 
                 self.assertIsInstance(mobydick, unicode)
                 self.assertIsInstance(constitution, unicode)
