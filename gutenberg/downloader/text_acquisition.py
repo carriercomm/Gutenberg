@@ -1,6 +1,18 @@
 """Module to deal with text acquisition."""
 
 
+import contextlib
+import urllib2
+
+
+def _urlopen(*args, **kwargs):
+    """Wrapper for urllib2.urlopen to make the function usable in
+    with-statements.
+
+    """
+    return contextlib.closing(urllib2.urlopen(*args, **kwargs))
+
+
 def _format_download_uri(etextno):
     """Returns the download location on the Project Gutenberg servers for a
     given text.
@@ -34,7 +46,14 @@ def _format_download_uri(etextno):
 
 
 def fetch_etext(etextno):
-    raise NotImplementedError
+    """Returns a unicode representation of the full body of a Project Gutenberg
+    text (makes a remote call to Project Gutenberg's servers).
+
+    """
+    download_uri = _format_download_uri(etextno)
+    with _urlopen(download_uri) as response:
+        encoding = response.headers.getparam('charset') or 'utf-8'
+        return response.read().decode(encoding)
 
 
 if __name__ == '__main__':
