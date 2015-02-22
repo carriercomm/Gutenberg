@@ -65,7 +65,7 @@ def load_metadata(refresh_cache=False):
         metadata_graph.bind('pgterms', PGTERMS)
         metadata_graph.bind('dcterms', DCTERMS)
         with gzip.open(cached, 'wb') as metadata_file:
-            metadata_file.write(metadata_graph.serialize(format='xml'))
+            metadata_file.write(metadata_graph.serialize(format='pretty-xml'))
     else:
         with gzip.open(cached, 'rb') as metadata_file:
             metadata_graph.parse(file=metadata_file, format='xml')
