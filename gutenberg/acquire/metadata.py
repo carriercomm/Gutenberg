@@ -10,10 +10,15 @@ import tempfile
 import urllib2
 
 from rdflib.graph import Graph
+from rdflib.namespace import DCTERMS
+from rdflib.namespace import Namespace
 
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
 from gutenberg._util.persistence import local_path
+
+
+PGTERMS = Namespace(r'http://www.gutenberg.org/2009/pgterms/')
 
 
 def _download_metadata_archive():
@@ -57,6 +62,8 @@ def load_metadata(refresh_cache=False):
         with _download_metadata_archive() as metadata_archive:
             for graph in _iter_metadata_graphs(metadata_archive.name):
                 metadata_graph += graph
+        metadata_graph.bind('pgterms', PGTERMS)
+        metadata_graph.bind('dcterms', DCTERMS)
         with gzip.open(cached, 'wb') as metadata_file:
             metadata_file.write(metadata_graph.serialize(format='xml'))
     else:
