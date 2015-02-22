@@ -5,8 +5,26 @@
 
 import unittest
 
+from gutenberg.acquire.metadata import DCTERMS
+from gutenberg.acquire.metadata import PGTERMS
+from gutenberg.acquire.metadata import load_metadata
 from gutenberg.acquire.text import _format_download_uri
 from gutenberg.acquire.text import load_etext
+
+
+class TestAcquireMetadata(unittest.TestCase):
+    def test_load_metadata(self):
+        metadata = load_metadata()
+        self.assertGreater(len(list(metadata[::PGTERMS.ebook])), 0)
+        self.assertGreater(len(list(metadata[:DCTERMS.creator:])), 0)
+        self.assertGreater(len(list(metadata[:DCTERMS.subject:])), 0)
+        self.assertGreater(len(list(metadata.query(r'''
+            SELECT (SAMPLE($author) AS $author)
+                   (COUNT($ebook) AS $num_ebooks)
+            WHERE { $ebook rdf:type pgterms:ebook.
+                    $author dcterms:creator $ebook. }
+            GROUP BY $author
+        '''))), 0)
 
 
 class TestAcquireText(unittest.TestCase):
