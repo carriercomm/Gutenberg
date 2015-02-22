@@ -7,10 +7,10 @@ import os
 
 import requests
 
-from gutenberg.util.os import makedirs
-from gutenberg.util.os import remove
-from gutenberg.util.persistence import local_path
-from gutenberg.util.types import validate_etextno
+from gutenberg._util.os import makedirs
+from gutenberg._util.os import remove
+from gutenberg._util.persistence import local_path
+from gutenberg._util.types import validate_etextno
 
 
 def _format_download_uri(etextno):
