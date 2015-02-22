@@ -31,10 +31,17 @@ def _format_download_uri(etextno):
 
     else:
         etextno = str(etextno)
-        return '{root}/{path}/{etextno}/{etextno}.txt'.format(
-            root=uri_root,
-            path='/'.join(etextno[:len(etextno) - 1]),
-            etextno=etextno)
+        extensions = ('.txt', '-8.txt')
+        for extension in extensions:
+            uri = '{root}/{path}/{etextno}/{etextno}{extension}'.format(
+                root=uri_root,
+                path='/'.join(etextno[:len(etextno) - 1]),
+                etextno=etextno,
+                extension=extension)
+            response = requests.head(uri)
+            if response.ok:
+                return uri
+        raise ValueError('download URI for {} not supported'.format(etextno))
 
 
 def fetch_etext(etextno):
