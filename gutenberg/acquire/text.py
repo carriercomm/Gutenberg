@@ -2,7 +2,10 @@
 """Module to deal with text acquisition."""
 
 
+import gzip
+import os
 import requests
+from gutenberg.util.persistence import local_file
 from gutenberg.util.types import validate_etextno
 
 
@@ -45,19 +48,31 @@ def _format_download_uri(etextno):
         raise ValueError('download URI for {} not supported'.format(etextno))
 
 
-def fetch_etext(etextno):
+def fetch_etext(etextno, refresh_cache=False):
     """Returns a unicode representation of the full body of a Project Gutenberg
-    text (makes a remote call to Project Gutenberg's servers).
+    text. After making an initial remote call to Project Gutenberg's servers,
+    the text is persisted locally.
 
     """
-    download_uri = _format_download_uri(validate_etextno(etextno))
-    response = requests.get(download_uri)
-    return response.text
+    etextno = validate_etextno(etextno)
+    cached = local_file(os.path.join('text', '{}.txt.gz'.format(etextno)))
+
+    if refresh_cache or not os.path.exists(cached):
+        download_uri = _format_download_uri(etextno)
+        response = requests.get(download_uri)
+        text = response.text
+        with gzip.open(cached, 'w') as cache:
+            cache.write(text.encode('utf-8'))
+    else:
+        with gzip.open(cached, 'r') as cache:
+            text = cache.read().decode('utf-8')
+    return text
 
 
 if __name__ == '__main__':
     # pylint: disable=C0111
     # pylint: disable=R0904
+    import functools
     import unittest
 
     class Test(unittest.TestCase):
@@ -66,16 +81,19 @@ if __name__ == '__main__':
         unicode_etextno = 14287
 
         def test_fetch_etext(self):
-            mobydick = fetch_etext(Test.newstyle_etextno)
-            constitution = fetch_etext(Test.oldstyle_etextno)
-            ilemysterieuse = fetch_etext(Test.unicode_etextno)
+            fetchers = (functools.partial(fetch_etext, refresh_cache=True),
+                        functools.partial(fetch_etext, refresh_cache=False))
+            for fetch in fetchers:
+                mobydick = fetch(Test.newstyle_etextno)
+                constitution = fetch(Test.oldstyle_etextno)
+                ilemysterieuse = fetch(Test.unicode_etextno)
 
-            self.assertIsInstance(mobydick, unicode)
-            self.assertIsInstance(constitution, unicode)
-            self.assertIsInstance(ilemysterieuse, unicode)
-            self.assertIn(u'Moby Dick; or The Whale', mobydick)
-            self.assertIn(u"The United States' Constitution", constitution)
-            self.assertIn(u"L'île mystérieuse", ilemysterieuse)
+                self.assertIsInstance(mobydick, unicode)
+                self.assertIsInstance(constitution, unicode)
+                self.assertIsInstance(ilemysterieuse, unicode)
+                self.assertIn(u'Moby Dick; or The Whale', mobydick)
+                self.assertIn(u"The United States' Constitution", constitution)
+                self.assertIn(u"L'île mystérieuse", ilemysterieuse)
 
         def test_format_download_uri(self):
             self.assertEquals(
