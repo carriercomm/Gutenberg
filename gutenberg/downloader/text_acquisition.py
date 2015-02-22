@@ -2,16 +2,7 @@
 """Module to deal with text acquisition."""
 
 
-import contextlib
-import urllib2
-
-
-def _urlopen(*args, **kwargs):
-    """Wrapper for urllib2.urlopen to make the function usable in
-    with-statements.
-
-    """
-    return contextlib.closing(urllib2.urlopen(*args, **kwargs))
+import requests
 
 
 def _format_download_uri(etextno):
@@ -52,9 +43,8 @@ def fetch_etext(etextno):
 
     """
     download_uri = _format_download_uri(etextno)
-    with _urlopen(download_uri) as response:
-        encoding = response.headers.getparam('charset') or 'utf-8'
-        return response.read().decode(encoding)
+    response = requests.get(download_uri)
+    return response.text
 
 
 if __name__ == '__main__':
