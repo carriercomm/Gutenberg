@@ -11,6 +11,7 @@ import tempfile
 import urllib2
 
 from rdflib.graph import Graph
+from rdflib.term import URIRef
 
 from gutenberg._domain_model.persistence import local_path
 from gutenberg._domain_model.vocabulary import DCTERMS
@@ -34,15 +35,19 @@ def _download_metadata_archive():
     remove(metadata_archive.name)
 
 
-def _iter_metadata_graphs(metadata_archive_path):
+def _iter_metadata_triples(metadata_archive_path):
     """Yields all meta-data of Project Gutenberg texts contained in the catalog
     dump.
 
     """
+    is_invalid = lambda token: isinstance(token, URIRef) and ' ' in token
     with tarfile.open(metadata_archive_path) as metadata_archive:
         for item in metadata_archive:
             if re.match(r'^.*pg(?P<etextno>\d+).rdf$', item.name):
-                yield Graph().parse(metadata_archive.extractfile(item))
+                graph = Graph().parse(metadata_archive.extractfile(item))
+                for fact in graph:
+                    if not any(is_invalid(token) for token in fact):
+                        yield fact
 
 
 def load_metadata(refresh_cache=False):
@@ -60,8 +65,8 @@ def load_metadata(refresh_cache=False):
     if not os.path.exists(cached):
         makedirs(os.path.dirname(cached))
         with _download_metadata_archive() as metadata_archive:
-            for graph in _iter_metadata_graphs(metadata_archive):
-                metadata_graph += graph
+            for fact in _iter_metadata_triples(metadata_archive):
+                metadata_graph.add(fact)
         metadata_graph.bind('pgterms', PGTERMS)
         metadata_graph.bind('dcterms', DCTERMS)
         with gzip.open(cached, 'wb') as metadata_file:
