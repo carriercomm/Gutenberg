@@ -5,8 +5,6 @@
 
 import unittest
 
-from gutenberg._domain_model.vocabulary import DCTERMS
-from gutenberg._domain_model.vocabulary import PGTERMS
 from gutenberg.acquire import load_metadata
 from gutenberg.acquire import load_etext
 
@@ -14,15 +12,17 @@ from gutenberg.acquire import load_etext
 class TestAcquireMetadata(unittest.TestCase):
     def test_load_metadata(self):
         metadata = load_metadata()
-        self.assertGreater(len(list(metadata[::PGTERMS.ebook])), 0)
-        self.assertGreater(len(list(metadata[:DCTERMS.creator:])), 0)
-        self.assertGreater(len(list(metadata[:DCTERMS.subject:])), 0)
         self.assertGreater(len(list(metadata.query(r'''
-            SELECT (SAMPLE($author) AS $author)
-                   (COUNT($ebook) AS $num_ebooks)
-            WHERE { $ebook rdf:type pgterms:ebook.
-                    $author dcterms:creator $ebook. }
-            GROUP BY $author
+            SELECT $ebook
+            WHERE { $ebook a pgterms:ebook. }
+        '''))), 0)
+        self.assertGreater(len(list(metadata.query(r'''
+            SELECT $author
+            WHERE { [] a pgterms:ebook ; dcterms:creator $author. }
+        '''))), 0)
+        self.assertGreater(len(list(metadata.query(r'''
+            SELECT $title
+            WHERE { [] a pgterms:ebook ; dcterms:title $title. }
         '''))), 0)
 
 
