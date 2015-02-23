@@ -59,7 +59,7 @@ def load_metadata(refresh_cache=False):
 
     """
     metadata_graph = Graph()
-    cached = local_path(os.path.join('metadata', 'metadata.rdf.xml.gz'))
+    cached = local_path(os.path.join('metadata', 'metadata.rdf.nt.gz'))
     if refresh_cache:
         remove(cached)
     if not os.path.exists(cached):
@@ -70,8 +70,8 @@ def load_metadata(refresh_cache=False):
         metadata_graph.bind('pgterms', PGTERMS)
         metadata_graph.bind('dcterms', DCTERMS)
         with gzip.open(cached, 'wb') as metadata_file:
-            metadata_file.write(metadata_graph.serialize(format='pretty-xml'))
+            metadata_file.write(metadata_graph.serialize(format='nt'))
     else:
         with gzip.open(cached, 'rb') as metadata_file:
-            metadata_graph.parse(file=metadata_file, format='xml')
+            metadata_graph.parse(file=metadata_file, format='nt')
     return metadata_graph
