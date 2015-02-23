@@ -4,10 +4,10 @@
 
 import unittest
 
-from gutenberg._util.types import validate_etextno
+from gutenberg._domain_model.types import validate_etextno
 
 
-class TestUtilTypes(unittest.TestCase):
+class TestDomainModelTypes(unittest.TestCase):
     def test_is_valid_etext(self):
         self.assertIsNotNone(validate_etextno(1))
         self.assertIsNotNone(validate_etextno(12))
