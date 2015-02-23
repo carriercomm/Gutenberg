@@ -11,11 +11,11 @@ import urllib2
 
 from rdflib.graph import Graph
 
+from gutenberg._domain_model.persistence import local_path
 from gutenberg._domain_model.vocabulary import DCTERMS
 from gutenberg._domain_model.vocabulary import PGTERMS
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
-from gutenberg._util.persistence import local_path
 
 
 def _download_metadata_archive():
