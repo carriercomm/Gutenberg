@@ -1,6 +1,7 @@
 """Module to deal with metadata acquisition."""
 
 
+import contextlib
 import gzip
 import os
 import re
@@ -18,6 +19,7 @@ from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
 
 
+@contextlib.contextmanager
 def _download_metadata_archive():
     """Makes a remote call to the Project Gutenberg servers and downloads the
     entire Project Gutenberg meta-data catalog. The catalog describes the texts
@@ -26,9 +28,10 @@ def _download_metadata_archive():
 
     """
     data_url = r'http://www.gutenberg.org/cache/epub/feeds/rdf-files.tar.bz2'
-    metadata_archive = tempfile.NamedTemporaryFile()
-    shutil.copyfileobj(urllib2.urlopen(data_url), metadata_archive)
-    return metadata_archive
+    with tempfile.NamedTemporaryFile(delete=False) as metadata_archive:
+        shutil.copyfileobj(urllib2.urlopen(data_url), metadata_archive)
+    yield metadata_archive.name
+    remove(metadata_archive.name)
 
 
 def _iter_metadata_graphs(metadata_archive_path):
@@ -57,7 +60,7 @@ def load_metadata(refresh_cache=False):
     if not os.path.exists(cached):
         makedirs(os.path.dirname(cached))
         with _download_metadata_archive() as metadata_archive:
-            for graph in _iter_metadata_graphs(metadata_archive.name):
+            for graph in _iter_metadata_graphs(metadata_archive):
                 metadata_graph += graph
         metadata_graph.bind('pgterms', PGTERMS)
         metadata_graph.bind('dcterms', DCTERMS)
