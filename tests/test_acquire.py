@@ -5,8 +5,8 @@
 
 import unittest
 
-from gutenberg.acquire.metadata import DCTERMS
-from gutenberg.acquire.metadata import PGTERMS
+from gutenberg._domain_model.vocabulary import DCTERMS
+from gutenberg._domain_model.vocabulary import PGTERMS
 from gutenberg.acquire.metadata import load_metadata
 from gutenberg.acquire.text import _format_download_uri
 from gutenberg.acquire.text import load_etext

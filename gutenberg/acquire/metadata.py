@@ -10,15 +10,12 @@ import tempfile
 import urllib2
 
 from rdflib.graph import Graph
-from rdflib.namespace import DCTERMS
-from rdflib.namespace import Namespace
 
+from gutenberg._domain_model.vocabulary import DCTERMS
+from gutenberg._domain_model.vocabulary import PGTERMS
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
 from gutenberg._util.persistence import local_path
-
-
-PGTERMS = Namespace(r'http://www.gutenberg.org/2009/pgterms/')
 
 
 def _download_metadata_archive():
