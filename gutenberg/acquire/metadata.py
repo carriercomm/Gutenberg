@@ -3,6 +3,7 @@
 
 import contextlib
 import gzip
+import logging
 import os
 import re
 import shutil
@@ -16,6 +17,7 @@ from rdflib.term import URIRef
 from gutenberg._domain_model.persistence import local_path
 from gutenberg._domain_model.vocabulary import DCTERMS
 from gutenberg._domain_model.vocabulary import PGTERMS
+from gutenberg._util.logging import disable_logging
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
 
@@ -44,10 +46,13 @@ def _iter_metadata_triples(metadata_archive_path):
     with tarfile.open(metadata_archive_path) as metadata_archive:
         for item in metadata_archive:
             if re.match(r'^.*pg(?P<etextno>\d+).rdf$', item.name):
-                graph = Graph().parse(metadata_archive.extractfile(item))
+                with disable_logging():
+                    graph = Graph().parse(metadata_archive.extractfile(item))
                 for fact in graph:
                     if not any(is_invalid(token) for token in fact):
                         yield fact
+                    else:
+                        logging.info('skipping invalid triple %s', fact)
 
 
 def load_metadata(refresh_cache=False):
