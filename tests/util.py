@@ -5,12 +5,23 @@
 
 import gzip
 import os
+import shutil
 import tempfile
 
 
 NEWSTYLE_ETEXTNO = 2701
 OLDSTYLE_ETEXTNO = 5
 UNICODE_ETEXTNO = 14287
+
+
+class MockTextMixin(object):
+    def setUp(self):
+        import gutenberg.acquire.text
+        self.mock_text_cache = tempfile.mkdtemp()
+        gutenberg.acquire.text._TEXT_CACHE = self.mock_text_cache
+
+    def tearDown(self):
+        shutil.rmtree(self.mock_text_cache)
 
 
 class MockMetadataMixin(object):

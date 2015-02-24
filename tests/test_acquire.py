@@ -6,6 +6,7 @@
 import unittest
 
 from tests.util import MockMetadataMixin
+from tests.util import MockTextMixin
 from tests.util import NEWSTYLE_ETEXTNO
 from tests.util import OLDSTYLE_ETEXTNO
 from tests.util import UNICODE_ETEXTNO
@@ -31,7 +32,7 @@ class TestAcquireMetadata(MockMetadataMixin, unittest.TestCase):
         '''))), 3)
 
 
-class TestAcquireText(unittest.TestCase):
+class TestAcquireText(MockTextMixin, unittest.TestCase):
     def test_load_etext(self):
         loaders = (lambda etextno: load_etext(etextno, refresh_cache=True),
                    lambda etextno: load_etext(etextno, refresh_cache=False))
