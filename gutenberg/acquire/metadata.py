@@ -55,6 +55,16 @@ def _iter_metadata_triples(metadata_archive_path):
                         logging.info('skipping invalid triple %s', fact)
 
 
+def _add_namespaces(graph):
+    """Function to ensure that the graph always has some specific namespace
+    aliases set.
+
+    """
+    graph.bind('pgterms', PGTERMS)
+    graph.bind('dcterms', DCTERMS)
+    return graph
+
+
 def load_metadata(refresh_cache=False):
     """Returns a graph representing meta-data for all Project Gutenberg texts.
     Pertinent information about texts or about how texts relate to each other
@@ -72,11 +82,9 @@ def load_metadata(refresh_cache=False):
         with _download_metadata_archive() as metadata_archive:
             for fact in _iter_metadata_triples(metadata_archive):
                 metadata_graph.add(fact)
-        metadata_graph.bind('pgterms', PGTERMS)
-        metadata_graph.bind('dcterms', DCTERMS)
         with gzip.open(cached, 'wb') as metadata_file:
             metadata_file.write(metadata_graph.serialize(format='nt'))
     else:
         with gzip.open(cached, 'rb') as metadata_file:
             metadata_graph.parse(file=metadata_file, format='nt')
-    return metadata_graph
+    return _add_namespaces(metadata_graph)
