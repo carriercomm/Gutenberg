@@ -22,6 +22,9 @@ from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
 
 
+_METADATA_CACHE = local_path(os.path.join('metadata', 'metadata.rdf.nt.gz'))
+
+
 @contextlib.contextmanager
 def _download_metadata_archive():
     """Makes a remote call to the Project Gutenberg servers and downloads the
@@ -74,17 +77,16 @@ def load_metadata(refresh_cache=False):
 
     """
     metadata_graph = Graph()
-    cached = local_path(os.path.join('metadata', 'metadata.rdf.nt.gz'))
     if refresh_cache:
-        remove(cached)
-    if not os.path.exists(cached):
-        makedirs(os.path.dirname(cached))
+        remove(_METADATA_CACHE)
+    if not os.path.exists(_METADATA_CACHE):
+        makedirs(os.path.dirname(_METADATA_CACHE))
         with _download_metadata_archive() as metadata_archive:
             for fact in _iter_metadata_triples(metadata_archive):
                 metadata_graph.add(fact)
-        with gzip.open(cached, 'wb') as metadata_file:
+        with gzip.open(_METADATA_CACHE, 'wb') as metadata_file:
             metadata_file.write(metadata_graph.serialize(format='nt'))
     else:
-        with gzip.open(cached, 'rb') as metadata_file:
+        with gzip.open(_METADATA_CACHE, 'rb') as metadata_file:
             metadata_graph.parse(file=metadata_file, format='nt')
     return _add_namespaces(metadata_graph)

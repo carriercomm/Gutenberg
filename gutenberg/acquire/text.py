@@ -12,6 +12,9 @@ from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
 
 
+_TEXT_CACHE = local_path('text')
+
+
 def _format_download_uri(etextno):
     """Returns the download location on the Project Gutenberg servers for a
     given text.
@@ -58,7 +61,7 @@ def load_etext(etextno, refresh_cache=False):
 
     """
     etextno = validate_etextno(etextno)
-    cached = local_path(os.path.join('text', '{}.txt.gz'.format(etextno)))
+    cached = os.path.join(_TEXT_CACHE, '{}.txt.gz'.format(etextno))
 
     if refresh_cache:
         remove(cached)
