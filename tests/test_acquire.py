@@ -69,18 +69,18 @@ class TestAcquireMetadata(unittest.TestCase):
 
     def test_load_metadata(self):
         metadata = load_metadata()
-        self.assertGreater(len(list(metadata.query(r'''
+        self.assertEqual(len(list(metadata.query(r'''
             SELECT $ebook
             WHERE { $ebook a pgterms:ebook. }
-        '''))), 0)
-        self.assertGreater(len(list(metadata.query(r'''
+        '''))), 3)
+        self.assertEqual(len(list(metadata.query(r'''
             SELECT $author
             WHERE { [] a pgterms:ebook ; dcterms:creator $author. }
-        '''))), 0)
-        self.assertGreater(len(list(metadata.query(r'''
+        '''))), 3)
+        self.assertEqual(len(list(metadata.query(r'''
             SELECT $title
             WHERE { [] a pgterms:ebook ; dcterms:title $title. }
-        '''))), 0)
+        '''))), 3)
 
 
 class TestAcquireText(unittest.TestCase):
