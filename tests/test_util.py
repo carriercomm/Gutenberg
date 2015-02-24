@@ -3,11 +3,13 @@
 # pylint: disable=R0904
 
 
+import abc
 import os
 import shutil
 import tempfile
 import unittest
 
+from gutenberg._util.abc import abstractclassmethod
 from gutenberg._util.objects import all_subclasses
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
@@ -35,6 +37,25 @@ class TestUtilObjects(unittest.TestCase):
 
         self.assertItemsEqual(all_subclasses(Root), [AB, ABC, AD, ABAD, ABADE])
         self.assertSetEqual(all_subclasses(ABADE), set())
+
+
+class TestUtilAbc(unittest.TestCase):
+    def test_abstractclassmethod(self):
+        class ClassWithAbstractClassMethod(object):
+            __metaclass__ = abc.ABCMeta
+
+            @abstractclassmethod
+            def method(cls):
+                pass
+
+        class ConcreteImplementation(ClassWithAbstractClassMethod):
+            @classmethod
+            def method(cls):
+                pass
+
+        with self.assertRaises(TypeError):
+            ClassWithAbstractClassMethod()
+        ConcreteImplementation()
 
 
 class TestUtilOs(unittest.TestCase):
