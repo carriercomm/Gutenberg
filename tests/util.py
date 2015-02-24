@@ -8,6 +8,11 @@ import os
 import tempfile
 
 
+NEWSTYLE_ETEXTNO = 2701
+OLDSTYLE_ETEXTNO = 5
+UNICODE_ETEXTNO = 14287
+
+
 class MockMetadataMixin(object):
     def setUp(self):
         import gutenberg.acquire.metadata

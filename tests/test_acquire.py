@@ -6,6 +6,9 @@
 import unittest
 
 from tests.util import MockMetadataMixin
+from tests.util import NEWSTYLE_ETEXTNO
+from tests.util import OLDSTYLE_ETEXTNO
+from tests.util import UNICODE_ETEXTNO
 
 from gutenberg.acquire import load_etext
 from gutenberg.acquire import load_metadata
@@ -29,17 +32,13 @@ class TestAcquireMetadata(MockMetadataMixin, unittest.TestCase):
 
 
 class TestAcquireText(unittest.TestCase):
-    newstyle_etextno = 2701
-    oldstyle_etextno = 5
-    unicode_etextno = 14287
-
     def test_load_etext(self):
         loaders = (lambda etextno: load_etext(etextno, refresh_cache=True),
                    lambda etextno: load_etext(etextno, refresh_cache=False))
         for load in loaders:
-            mobydick = load(TestAcquireText.newstyle_etextno)
-            constitution = load(TestAcquireText.oldstyle_etextno)
-            ilemysterieuse = load(TestAcquireText.unicode_etextno)
+            mobydick = load(NEWSTYLE_ETEXTNO)
+            constitution = load(OLDSTYLE_ETEXTNO)
+            ilemysterieuse = load(UNICODE_ETEXTNO)
 
             self.assertIsInstance(mobydick, unicode)
             self.assertIsInstance(constitution, unicode)
