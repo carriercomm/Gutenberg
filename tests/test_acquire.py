@@ -1,15 +1,72 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=C0111
 # pylint: disable=R0904
+# pylint: disable=W0212
 
 
+from gzip import GzipFile
+from os import remove
+from tempfile import NamedTemporaryFile
 import unittest
 
 from gutenberg.acquire import load_metadata
 from gutenberg.acquire import load_etext
 
 
+def _mock_metadata_cache():
+    with NamedTemporaryFile(delete=False, suffix='nt.gz') as metadata_file:
+        with GzipFile(fileobj=metadata_file, mode='wb') as gzip_file:
+            gzip_file.write('\n'.join([
+                r'<http://www.gutenberg.org/ebooks/2701> '
+                r'<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> '
+                r'<http://www.gutenberg.org/2009/pgterms/ebook> '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/2701> '
+                r'<http://purl.org/dc/terms/creator> '
+                r'<http://www.gutenberg.org/2009/agents/9> '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/2701> '
+                r'<http://purl.org/dc/terms/title> '
+                r'"Moby Dick; Or, The Whale" '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/5> '
+                r'<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> '
+                r'<http://www.gutenberg.org/2009/pgterms/ebook> '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/5> '
+                r'<http://purl.org/dc/terms/creator> '
+                r'<http://www.gutenberg.org/2009/agents/1> '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/5> '
+                r'<http://purl.org/dc/terms/title> '
+                r'"The United States Constitution" '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/14287> '
+                r'<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> '
+                r'<http://www.gutenberg.org/2009/pgterms/ebook> '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/14287> '
+                r'<http://purl.org/dc/terms/creator> '
+                r'<http://www.gutenberg.org/2009/agents/60> '
+                r'.',
+                r'<http://www.gutenberg.org/ebooks/14287> '
+                r'<http://purl.org/dc/terms/title> '
+                r'"L\'\u00EEle myst\u00E9rieuse" '
+                r'.',
+            ]))
+
+    return metadata_file.name
+
+
 class TestAcquireMetadata(unittest.TestCase):
+    def setUp(self):
+        import gutenberg.acquire.metadata
+        self.mock_metadata_cache = _mock_metadata_cache()
+        gutenberg.acquire.metadata._METADATA_CACHE = self.mock_metadata_cache
+
+    def tearDown(self):
+        remove(self.mock_metadata_cache)
+
     def test_load_metadata(self):
         metadata = load_metadata()
         self.assertGreater(len(list(metadata.query(r'''
