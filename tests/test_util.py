@@ -1,4 +1,5 @@
 # pylint: disable=C0111
+# pylint: disable=R0903
 # pylint: disable=R0904
 
 
@@ -7,8 +8,33 @@ import shutil
 import tempfile
 import unittest
 
+from gutenberg._util.objects import all_subclasses
 from gutenberg._util.os import makedirs
 from gutenberg._util.os import remove
+
+
+class TestUtilObjects(unittest.TestCase):
+    def test_all_subclasses(self):
+        class Root(object):
+            pass
+
+        class AB(Root):
+            pass
+
+        class ABC(AB):
+            pass
+
+        class AD(Root):
+            pass
+
+        class ABAD(AB, AD):
+            pass
+
+        class ABADE(ABAD):
+            pass
+
+        self.assertItemsEqual(all_subclasses(Root), [AB, ABC, AD, ABAD, ABADE])
+        self.assertSetEqual(all_subclasses(ABADE), set())
 
 
 class TestUtilOs(unittest.TestCase):
